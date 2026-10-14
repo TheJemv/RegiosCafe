@@ -1,0 +1,89 @@
+---
+import '../styles/global.css';
+import { branches, fullAddress, site } from '../data/site';
+
+interface Props {
+	title?: string;
+	description?: string;
+}
+
+const {
+	title = `${site.name} | Desayunos y almuerzos en Matamoros desde ${site.since}`,
+	description = `Almuerzos norteños, café y antojitos mexicanos en ${site.city}, ${site.state}. Guayin, huevos rancheros, gorditas y más en cuatro sucursales. Desde ${site.since}.`,
+} = Astro.props;
+
+const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
+const ogImage = Astro.site ? new URL('/og.jpg', Astro.site).href : '/og.jpg';
+
+const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+const jsonLd = {
+	'@context': 'https://schema.org',
+	'@graph': branches.map((b) => ({
+		'@type': 'Restaurant',
+		'@id': `${canonical ?? ''}#${b.id}`,
+		name: `${site.name} ${b.name}`,
+		servesCuisine: ['Mexicana', 'Desayunos', 'Antojitos'],
+		priceRange: site.priceRange,
+		telephone: `+52 ${b.phones[0]}`,
+		image: ogImage,
+		sameAs: [site.facebook],
+		hasMenu: canonical ? `${canonical}#menu` : '#menu',
+		foundingDate: String(site.since),
+		address: {
+			'@type': 'PostalAddress',
+			streetAddress: b.street,
+			addressLocality: site.city,
+			addressRegion: site.state,
+			postalCode: b.postalCode,
+			addressCountry: 'MX',
+		},
+		description: `${b.blurb} ${fullAddress(b)}.`,
+		...(b.hours && {
+			openingHoursSpecification: [
+				{ '@type': 'OpeningHoursSpecification', dayOfWeek: dayNames, opens: b.hours.monSat[0], closes: b.hours.monSat[1] },
+				{ '@type': 'OpeningHoursSpecification', dayOfWeek: 'Sunday', opens: b.hours.sun[0], closes: b.hours.sun[1] },
+			],
+		}),
+	})),
+};
+---
+
+<!doctype html>
+<html lang="es-MX">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		{canonical && <link rel="canonical" href={canonical} />}
+		<meta name="theme-color" content="#f16d12" />
+
+		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+		<link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+		<meta property="og:type" content="restaurant.restaurant" />
+		<meta property="og:locale" content="es_MX" />
+		<meta property="og:site_name" content={site.name} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content={ogImage} />
+		{canonical && <meta property="og:url" content={canonical} />}
+		<meta name="twitter:card" content="summary_large_image" />
+
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			rel="stylesheet"
+			href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,500..800,0..100;1,9..144,500..700,0..100&display=swap"
+		/>
+
+		<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+		<meta name="generator" content={Astro.generator} />
+	</head>
+	<body>
+		<a class="skip-link" href="#contenido">Saltar al contenido</a>
+		<slot />
+	</body>
+</html>

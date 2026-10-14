@@ -1,0 +1,168 @@
+---
+import { branches, formatPhone, mainBranch, telHref } from '../data/site';
+import Icon from './Icon.astro';
+
+const steps = [
+	{ icon: 'calendar', title: 'Elige día y sucursal', text: 'Entre semana para el desayuno de trabajo o el domingo en familia.' },
+	{ icon: 'users', title: 'Dinos cuántos son', text: 'Así te tenemos la mesa lista cuando lleguen.' },
+	{ icon: 'coffee', title: 'Llega y disfruta', text: 'Nosotros nos encargamos del café y la sazón.' },
+] as const;
+---
+
+<section class="section groups" id="grupos" aria-labelledby="grupos-title">
+	<div class="container groups__grid">
+		<div class="groups__copy">
+			<p class="eyebrow">Grupos y reuniones</p>
+			<h2 id="grupos-title">¿Desayuno de trabajo o reunión familiar?</h2>
+			<p>
+				Recibimos grupos en nuestras sucursales. Llámanos con la fecha y el número de personas y te ayudamos a organizarlo.
+			</p>
+			<div class="groups__ctas">
+				<a class="btn" href={telHref(mainBranch.phones[0])}>
+					<Icon name="phone" size={18} /> Llamar a {mainBranch.name} · {formatPhone(mainBranch.phones[0])}
+				</a>
+				<a class="btn btn--light" href="#sucursales">Ver las {branches.length} sucursales</a>
+			</div>
+		</div>
+
+		<ol class="groups__steps">
+			{
+				steps.map((s, i) => (
+					<li>
+						<span class="step__num">{String(i + 1).padStart(2, '0')}</span>
+						<span class="step__icon">
+							<Icon name={s.icon} size={22} />
+						</span>
+						<div>
+							<h3>{s.title}</h3>
+							<p>{s.text}</p>
+						</div>
+					</li>
+				))
+			}
+		</ol>
+	</div>
+</section>
+
+<style>
+	.groups {
+		position: relative;
+		overflow: hidden;
+		background: var(--night);
+		color: var(--cream);
+	}
+
+	.groups::before {
+		content: '';
+		position: absolute;
+		left: -12%;
+		bottom: -55%;
+		width: 640px;
+		aspect-ratio: 1;
+		border-radius: 50%;
+		background: radial-gradient(circle, rgb(241 109 18 / 30%), transparent 65%);
+		pointer-events: none;
+	}
+
+	.groups__grid {
+		position: relative;
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		gap: clamp(40px, 6vw, 96px);
+		align-items: center;
+	}
+
+	.groups__copy {
+		display: grid;
+		gap: 1.25rem;
+		justify-items: start;
+	}
+
+	.groups .eyebrow {
+		color: #ffb27a;
+	}
+
+	.groups h2 {
+		font-size: clamp(2rem, 4.6vw, 3.25rem);
+	}
+
+	.groups__copy > p:not(.eyebrow) {
+		max-width: 32rem;
+		font-size: 1.0625rem;
+		color: rgb(251 246 238 / 78%);
+	}
+
+	.groups__ctas {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		margin-top: 0.5rem;
+	}
+
+	.groups__steps {
+		display: grid;
+		gap: 1rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.groups__steps li {
+		display: grid;
+		grid-template-columns: auto auto 1fr;
+		align-items: center;
+		gap: 1rem;
+		padding: 1.25rem 1.5rem;
+		border: 1px solid rgb(251 246 238 / 12%);
+		border-radius: var(--radius-lg);
+		background: var(--night-2);
+	}
+
+	.step__num {
+		font-family: var(--font-display);
+		font-size: 1.5rem;
+		font-style: italic;
+		font-weight: 600;
+		color: var(--orange);
+	}
+
+	.step__icon {
+		display: grid;
+		place-items: center;
+		width: 48px;
+		height: 48px;
+		border-radius: 14px;
+		background: rgb(241 109 18 / 14%);
+		color: #ffb27a;
+	}
+
+	.groups__steps h3 {
+		font-size: 1.1875rem;
+	}
+
+	.groups__steps p {
+		font-size: 0.9375rem;
+		color: rgb(251 246 238 / 70%);
+	}
+
+	@media (max-width: 900px) {
+		.groups__grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.groups__steps li {
+			grid-template-columns: auto 1fr;
+			padding: 1rem 1.125rem;
+		}
+
+		.step__num {
+			display: none;
+		}
+
+		.groups__ctas .btn {
+			width: 100%;
+		}
+	}
+</style>

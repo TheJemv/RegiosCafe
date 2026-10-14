@@ -1,0 +1,410 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/logo-regios.png';
+import { branches, mainBranch, site } from '../data/site';
+import { menu, formatPrice } from '../data/menu';
+import Icon from './Icon.astro';
+
+const years = new Date().getFullYear() - site.since;
+const featured = menu[0].items[0];
+const marquee = [
+	'Guayin especial',
+	'Huevos rancheros',
+	'Gorditas de manteca',
+	'Entomatadas',
+	'Hot cakes',
+	'Huevos divorciados',
+	'Club sándwich',
+	'Café recién servido',
+];
+---
+
+<section class="hero" id="inicio">
+	<div class="container hero__grid">
+		<div class="hero__copy">
+			<p class="hero__status" data-hero-status data-hours={JSON.stringify(mainBranch.hours)} hidden>
+				<span class="dot" aria-hidden="true"></span>
+				<strong data-status-text></strong>
+				<span data-greeting></span>
+			</p>
+
+			<p class="eyebrow">Desde {site.since} · {site.city}, {site.state}</p>
+
+			<h1>
+				El auténtico sabor <em>matutino</em> de Tamaulipas.
+			</h1>
+
+			<p class="hero__lede">
+				Almuerzos norteños, café caliente y antojitos hechos al momento. Desayunos con tradición en {branches.length} sucursales
+				de Matamoros.
+			</p>
+
+			<div class="hero__ctas">
+				<a class="btn" href="#menu">Ver menú <Icon name="arrow" size={18} /></a>
+				<a class="btn btn--ghost" href="#sucursales"><Icon name="pin" size={18} /> Encuentra tu sucursal</a>
+			</div>
+
+			<dl class="hero__stats">
+				<div>
+					<dt>Años sirviendo</dt>
+					<dd>{years}</dd>
+				</div>
+				<div>
+					<dt>Sucursales</dt>
+					<dd>{branches.length}</dd>
+				</div>
+				<div>
+					<dt>Visitas en Facebook</dt>
+					<dd>+{site.stats.checkins}</dd>
+				</div>
+			</dl>
+		</div>
+
+		<div class="hero__art" aria-hidden="true">
+			<div class="rays"></div>
+			<div class="disc"></div>
+			<div class="plate">
+				<Image src={logo} alt="" width={420} densities={[1, 2]} loading="eager" fetchpriority="high" />
+			</div>
+			<div class="ticket ticket--dish">
+				<span class="ticket__tag">{featured.tag}</span>
+				<span class="ticket__name">{featured.name}</span>
+				<span class="ticket__price">{formatPrice(featured.price)}</span>
+			</div>
+			<div class="ticket ticket--hours">
+				<Icon name="coffee" size={22} />
+				<span>Abrimos a las <strong>7:00 AM</strong></span>
+			</div>
+		</div>
+	</div>
+
+	<div class="marquee" aria-hidden="true">
+		<div class="marquee__track">
+			{
+				[0, 1].map(() => (
+					<ul>
+						{marquee.map((item) => (
+							<li>{item}</li>
+						))}
+					</ul>
+				))
+			}
+		</div>
+	</div>
+</section>
+
+<script>
+	import { getGreeting, getStatus } from '../scripts/hours';
+
+	const el = document.querySelector<HTMLElement>('[data-hero-status]');
+	if (el?.dataset.hours) {
+		const hours = JSON.parse(el.dataset.hours);
+		const status = getStatus(hours);
+		el.querySelector('[data-status-text]')!.textContent = status.open ? 'Abierto ahora' : 'Cerrado';
+		el.querySelector('[data-greeting]')!.textContent = getGreeting(hours);
+		el.toggleAttribute('data-open', status.open);
+		el.hidden = false;
+	}
+</script>
+
+<style>
+	.hero {
+		position: relative;
+		overflow: hidden;
+		padding-top: clamp(32px, 6vw, 72px);
+	}
+
+	.hero__grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+		align-items: center;
+		gap: clamp(32px, 5vw, 72px);
+		padding-bottom: clamp(48px, 7vw, 88px);
+	}
+
+	.hero__copy {
+		display: grid;
+		gap: 1.25rem;
+		justify-items: start;
+	}
+
+	.hero__status {
+		display: inline-flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.25rem 0.625rem;
+		padding: 0.5rem 0.875rem 0.5rem 0.75rem;
+		border: 1px solid var(--line);
+		border-radius: 16px;
+		background: var(--paper);
+		font-size: 0.875rem;
+		color: var(--ink-2);
+		box-shadow: var(--shadow);
+	}
+
+	.hero__status[hidden] {
+		display: none;
+	}
+
+	.hero__status strong {
+		color: var(--ink);
+	}
+
+	.dot {
+		width: 9px;
+		height: 9px;
+		border-radius: 50%;
+		background: var(--ink-3);
+	}
+
+	.hero__status[data-open] .dot {
+		background: #1f9d55;
+		box-shadow: 0 0 0 4px rgb(31 157 85 / 18%);
+	}
+
+	h1 {
+		font-size: clamp(2.75rem, 7vw, 5.25rem);
+		font-weight: 800;
+		line-height: 0.98;
+		letter-spacing: -0.03em;
+		font-variation-settings: 'SOFT' 100, 'opsz' 144;
+	}
+
+	h1 em {
+		font-style: italic;
+		font-weight: 600;
+		color: var(--orange-ink);
+	}
+
+	.hero__lede {
+		max-width: 34rem;
+		font-size: clamp(1.0625rem, 1.6vw, 1.25rem);
+		color: var(--ink-2);
+	}
+
+	.hero__ctas {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		margin-top: 0.5rem;
+	}
+
+	.hero__stats {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1.25rem 2.5rem;
+		margin: 1.25rem 0 0;
+		padding-top: 1.5rem;
+		border-top: 1px solid var(--line);
+	}
+
+	.hero__stats div {
+		display: flex;
+		flex-direction: column-reverse;
+	}
+
+	.hero__stats dt {
+		font-size: 0.8125rem;
+		color: var(--ink-3);
+	}
+
+	.hero__stats dd {
+		margin: 0;
+		font-family: var(--font-display);
+		font-size: 2rem;
+		font-weight: 700;
+		line-height: 1.1;
+	}
+
+	/* Arte: sol de la mañana + plato con el logo */
+	.hero__art {
+		position: relative;
+		width: 100%;
+		max-width: 560px;
+		aspect-ratio: 1;
+		justify-self: center;
+	}
+
+	.rays {
+		position: absolute;
+		inset: 0;
+		border-radius: 50%;
+		background: repeating-conic-gradient(var(--orange) 0deg 3deg, transparent 3deg 15deg);
+		-webkit-mask: radial-gradient(closest-side, transparent 66%, #000 67%, #000 92%, transparent 100%);
+		mask: radial-gradient(closest-side, transparent 66%, #000 67%, #000 92%, transparent 100%);
+		opacity: 0.28;
+		animation: spin 120s linear infinite;
+	}
+
+	.disc {
+		position: absolute;
+		inset: 13%;
+		border-radius: 50%;
+		background: radial-gradient(circle at 32% 28%, #ff9c45 0%, var(--orange) 55%, #d65a06 100%);
+		box-shadow: inset 0 -20px 40px rgb(120 40 0 / 25%);
+	}
+
+	.plate {
+		position: absolute;
+		inset: 21%;
+		display: grid;
+		place-items: center;
+		padding: 9%;
+		border-radius: 50%;
+		background: var(--paper);
+		box-shadow:
+			0 30px 60px -24px rgb(60 20 0 / 55%),
+			inset 0 0 0 10px var(--paper),
+			inset 0 0 0 11px var(--line);
+	}
+
+	.plate img {
+		width: 100%;
+		height: auto;
+		transform: rotate(-5deg);
+	}
+
+	.ticket {
+		position: absolute;
+		display: grid;
+		background: var(--paper);
+		border: 1px solid var(--line);
+		border-radius: 14px;
+		box-shadow: var(--shadow-lg);
+	}
+
+	.ticket--dish {
+		left: -2%;
+		bottom: 8%;
+		gap: 0.125rem;
+		padding: 0.875rem 1.125rem;
+		transform: rotate(-4deg);
+		border-top: 4px solid var(--orange);
+	}
+
+	.ticket__tag {
+		font-size: 0.6875rem;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--orange-ink);
+	}
+
+	.ticket__name {
+		font-family: var(--font-display);
+		font-size: 1.125rem;
+		font-weight: 700;
+	}
+
+	.ticket__price {
+		font-weight: 700;
+		color: var(--ink-2);
+	}
+
+	.ticket--hours {
+		right: 0;
+		top: 10%;
+		grid-auto-flow: column;
+		align-items: center;
+		gap: 0.625rem;
+		padding: 0.75rem 1rem;
+		font-size: 0.875rem;
+		color: var(--ink-2);
+		transform: rotate(3deg);
+	}
+
+	.ticket--hours :global(svg) {
+		color: var(--orange);
+	}
+
+	.ticket--hours strong {
+		color: var(--ink);
+	}
+
+	/* Cinta de platillos */
+	.marquee {
+		overflow: hidden;
+		background: var(--night);
+		color: var(--cream);
+		padding-block: 1rem;
+		border-block: 3px solid var(--orange);
+	}
+
+	.marquee__track {
+		display: flex;
+		width: max-content;
+		animation: marquee 40s linear infinite;
+	}
+
+	.marquee ul {
+		display: flex;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.marquee li {
+		display: flex;
+		align-items: center;
+		font-family: var(--font-display);
+		font-size: clamp(1.125rem, 2vw, 1.375rem);
+		font-style: italic;
+		font-weight: 500;
+		white-space: nowrap;
+	}
+
+	.marquee li::after {
+		content: '';
+		width: 8px;
+		height: 8px;
+		margin-inline: 1.75rem;
+		border-radius: 50%;
+		background: var(--orange);
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(1turn);
+		}
+	}
+
+	@keyframes marquee {
+		to {
+			transform: translateX(-50%);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.rays,
+		.marquee__track {
+			animation: none;
+		}
+	}
+
+	@media (max-width: 900px) {
+		.hero__grid {
+			grid-template-columns: 1fr;
+		}
+
+		.hero__art {
+			max-width: 440px;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.ticket--dish {
+			left: 0;
+			bottom: 2%;
+			padding: 0.625rem 0.875rem;
+		}
+
+		.ticket__name {
+			font-size: 1rem;
+		}
+
+		.ticket--hours {
+			top: 4%;
+			font-size: 0.8125rem;
+		}
+	}
+</style>

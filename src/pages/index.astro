@@ -1,0 +1,22 @@
+---
+import About from '../components/About.astro';
+import Branches from '../components/Branches.astro';
+import Footer from '../components/Footer.astro';
+import Groups from '../components/Groups.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Menu from '../components/Menu.astro';
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout>
+	<Header />
+	<main id="contenido">
+		<Hero />
+		<Menu />
+		<Branches />
+		<Groups />
+		<About />
+	</main>
+	<Footer />
+</Layout>

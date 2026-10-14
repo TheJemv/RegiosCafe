@@ -1,0 +1,189 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/logo-regios.png';
+import { branches, formatPhone, formatTime, mainBranch, site, telHref } from '../data/site';
+import Icon from './Icon.astro';
+
+const hours = mainBranch.hours!;
+---
+
+<footer class="footer">
+	<div class="container footer__grid">
+		<div class="footer__brand">
+			<div class="footer__logo">
+				<Image src={logo} alt="Cafetería Regio's, desde 1992" width={200} densities={[1, 2]} />
+			</div>
+			<p>{site.slogan}</p>
+			<a class="footer__social" href={site.facebook} target="_blank" rel="noopener">
+				<Icon name="facebook" size={18} /> Síguenos en Facebook
+			</a>
+		</div>
+
+		<div>
+			<h2>Sucursales</h2>
+			<ul>
+				{
+					branches.map((b) => (
+						<li>
+							<span>{b.name}</span>
+							<a href={telHref(b.phones[0])}>{formatPhone(b.phones[0])}</a>
+						</li>
+					))
+				}
+			</ul>
+		</div>
+
+		<div>
+			<h2>Horario</h2>
+			<ul>
+				<li>
+					<span>Lunes a sábado</span>
+					<span>{formatTime(hours.monSat[0])} – {formatTime(hours.monSat[1])}</span>
+				</li>
+				<li>
+					<span>Domingo</span>
+					<span>{formatTime(hours.sun[0])} – {formatTime(hours.sun[1])}</span>
+				</li>
+			</ul>
+		</div>
+
+		<div>
+			<h2>A domicilio</h2>
+			<ul>
+				{
+					site.delivery.map((d) => (
+						<li>
+							<a href={d.url} target="_blank" rel="noopener">
+								{d.name}
+							</a>
+						</li>
+					))
+				}
+			</ul>
+		</div>
+	</div>
+
+	<div class="container footer__bottom">
+		<p>© {new Date().getFullYear()} {site.name} · {site.city}, {site.state}</p>
+		<a href="#inicio">Volver arriba ↑</a>
+	</div>
+</footer>
+
+<style>
+	.footer {
+		background: var(--night);
+		color: rgb(251 246 238 / 78%);
+		padding-top: clamp(56px, 8vw, 96px);
+		border-top: 3px solid var(--orange);
+	}
+
+	.footer__grid {
+		display: grid;
+		grid-template-columns: 1.4fr repeat(3, 1fr);
+		gap: 2.5rem;
+	}
+
+	.footer__brand {
+		display: grid;
+		gap: 1rem;
+		justify-items: start;
+		align-content: start;
+	}
+
+	.footer__logo {
+		padding: 0.75rem 1rem;
+		border-radius: var(--radius);
+		background: var(--cream);
+	}
+
+	.footer__logo img {
+		width: 180px;
+		height: auto;
+	}
+
+	.footer__brand p {
+		max-width: 18rem;
+		font-family: var(--font-display);
+		font-style: italic;
+		font-size: 1.0625rem;
+		color: var(--cream);
+	}
+
+	.footer__social {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-weight: 600;
+		text-decoration: none;
+		color: var(--cream);
+	}
+
+	.footer__social:hover {
+		color: #ffb27a;
+	}
+
+	h2 {
+		margin-bottom: 1rem;
+		font-family: var(--font-body);
+		font-size: 0.8125rem;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: #ffb27a;
+	}
+
+	ul {
+		display: grid;
+		gap: 0.625rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		font-size: 0.9375rem;
+	}
+
+	li {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: 0.25rem 1rem;
+	}
+
+	li span:first-child {
+		color: var(--cream);
+	}
+
+	.footer a:not(.footer__social) {
+		text-underline-offset: 3px;
+	}
+
+	.footer a:hover {
+		color: #ffb27a;
+	}
+
+	.footer__bottom {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-top: clamp(40px, 6vw, 72px);
+		padding-block: 1.5rem;
+		border-top: 1px solid rgb(251 246 238 / 12%);
+		font-size: 0.875rem;
+	}
+
+	@media (max-width: 960px) {
+		.footer__grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.footer__brand {
+			grid-column: 1 / -1;
+		}
+	}
+
+	@media (max-width: 520px) {
+		.footer__grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>
